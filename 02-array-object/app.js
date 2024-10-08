@@ -18,32 +18,116 @@ const listElement = document.getElementById('list')
 // console.log(inputElement.value)
 // console.log(createBtn)
 // console.log(listElement)
-const notes = ['записать блок про массивы', 'рассказать теорию объектов']
+
+// function render() {
+//     // for (let i=0; i < notes.length; i++) {
+//     //     listElement.insertAdjacentHTML('beforeend', getNoteTemplate(notes[i]))
+//     // }
+//     for (const note of notes) {
+//         listElement.insertAdjacentHTML('beforeend', getNoteTemplate(note))
+//     }
+// }
+//
+// render()
+
+// createBtn.onclick = function () {
+//     if (inputElement.value.length === 0) {
+//         return //undefined
+//     }
+//     listElement.insertAdjacentHTML(
+//         'beforeend',
+//         getNoteTemplate(inputElement.value))
+//     inputElement.value = '' //обновление инпута
+// }
+
+/**
+ * Theory Object
+ *
+ const person = {
+ firstName: 'Ann',
+ lastName: 'Fox',
+ year: 1990,
+ hasGirlfriend: false,
+ lang: ['ru', 'en'],
+ getFullName: function () {
+ console.log(person.firstName + ' ' + person.lastName)
+ }
+ }
+ // person.getFullName()
+ console.log(person.year)
+ console.log(person['lang'])
+ const key = 'hasGirlfriend'
+ console.log(person[key])
+ person.hasGirlfriend = true
+ console.log(person[key])
+ person.getFullName()
+ */
+
+const notes = [
+    {
+        title: 'записать блок про массивы',
+        competed: false,
+    },
+    {
+        title: 'рассказать теорию объектов',
+        competed: true,
+    }
+]
 
 function render() {
-    listElement.insertAdjacentHTML('beforeend', getNoteTemplate(notes[0]))
-    listElement.insertAdjacentHTML('beforeend', getNoteTemplate(notes[1]))
+    listElement.innerHTML = ''
+    if(notes.length === 0){
+        listElement.innerHTML = `<p>no task</p>`
+    }
+    for (let i = 0; i < notes.length; i++) {
+        listElement.insertAdjacentHTML('beforeend', getNoteTemplate(notes[i], i))
+    }
+    // for (const note of notes) {
+    //     listElement.insertAdjacentHTML('beforeend', getNoteTemplate(note))
+    // }
 }
 
 render()
+
+listElement.onclick = function (event) {
+    // console.log(event.target.dataset.index)
+    if (event.target.dataset.index) {
+        const index = parseInt(event.target.dataset.index)
+        const type = event.target.dataset.type
+
+        if (type === 'toggle') {
+            notes[index].competed = !notes[index].competed
+        } else if (type === 'remove') {
+notes.splice(index, 1)        }
+        render()
+    }
+}
+
+function getNoteTemplate(note, index) { //формирование строки для каждой задачи
+    return `
+ <li class="list-group-item d-flex justify-content-between align-items-center"
+        >
+          <span class="${note.competed ? 'text-decoration-line-through' : ''}">${note.title}</span>
+          <span>
+            <span class="btn btn-small btn-${note.competed ? 'warning' : 'success'}" data-index="${index}" data-type="toggle">&check;</span>
+            <span class="btn btn-small btn-danger" data-index="${index}" data-type="remove">&times;</span>
+          </span>
+        </li> 
+`
+}
 
 createBtn.onclick = function () {
     if (inputElement.value.length === 0) {
         return //undefined
     }
-    listElement.insertAdjacentHTML('beforeend', getNoteTemplate(inputElement.value))
-    inputElement.value = ''
-}
-
-function getNoteTemplate(title) {
-    return `
- <li class="list-group-item d-flex justify-content-between align-items-center"
-        >
-          <span>${notes[0]}</span>
-          <span>
-            <span class="btn btn-small btn-success">&check;</span>
-            <span class="btn btn-small btn-danger">&times;</span>
-          </span>
-        </li> 
-`
+    const newNote = {
+        title: inputElement.value,
+        completed: false
+    }
+    // listElement.insertAdjacentHTML(
+    //     'beforeend',
+    //     getNoteTemplate(newNote))
+    notes.push(newNote)
+    render()
+    inputElement.value = '' //обновление инпута
 }
